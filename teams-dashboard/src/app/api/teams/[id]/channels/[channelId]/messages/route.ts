@@ -13,7 +13,7 @@ export async function GET(
 
     const messages = await query(`
     SELECT id, sender_name, sender_id, body_content,
-           body_content_type, created_at, importance, reply_to_id
+           body_content_type, created_at, importance, reply_to_id, attachments 
     FROM messages
     WHERE source_id = ? AND source_type = 'channel'
     ORDER BY created_at ASC

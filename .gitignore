@@ -138,3 +138,6 @@ Thumbs.db
 *.swo
 .project
 .settings/
+
+# Teams media
+teams_media/
