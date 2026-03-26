@@ -1,0 +1,33 @@
+{
+  "name": "teams-collector",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "sync": "ts-node src/index.ts",
+    "schedule": "ts-node src/index.ts --schedule",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "start:schedule": "node dist/index.js --schedule"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@azure/msal-node": "^5.1.1",
+    "axios": "^1.13.6",
+    "dotenv": "^17.3.1",
+    "mysql2": "^3.20.0",
+    "node-cron": "^4.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@types/node-cron": "^3.0.11",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.2"
+  }
+}

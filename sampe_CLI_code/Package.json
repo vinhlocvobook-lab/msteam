@@ -1,0 +1,15 @@
+{
+    "name": "teams-cli",
+    "version": "1.0.0",
+    "description": "CLI tool đọc tin nhắn Microsoft Teams qua MCP",
+    "main": "index.js",
+    "bin": {
+        "teams-cli": "./index.js"
+    },
+    "scripts": {
+        "start": "node index.js"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.0.0"
+    }
+}
