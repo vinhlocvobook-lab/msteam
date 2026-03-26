@@ -8,6 +8,7 @@ function requireEnv(key: string): string {
 }
 
 export const config = {
+    myUserId: 'dd9d9d2f-6742-4fd1-819f-bb232bb254ad', // user ID của
     azure: {
         clientId: requireEnv('AZURE_CLIENT_ID'),
         tenantId: requireEnv('AZURE_TENANT_ID'),

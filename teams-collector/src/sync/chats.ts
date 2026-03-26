@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { fetchAllPages, sleep } from '../graph';
-import { upsert, getLastSyncedAt, updateSyncState, logSync } from '../db';
+import { upsert, getLastSyncedAt, updateSyncState, logSync, getDb } from '../db';
 import { config } from '../config';
 
 interface Chat {
@@ -8,7 +8,7 @@ interface Chat {
     chatType: string;
     topic?: string;
     createdDateTime: string;
-    lastUpdatedDateTime?: string;
+    members?: { userId?: string; displayName?: string; email?: string }[];
 }
 
 interface ChatMember {
@@ -27,9 +27,10 @@ interface ChatMessage {
     replyToId?: string;
 }
 
-export async function syncChats(client: AxiosInstance): Promise<Chat[]> {
-    console.log('\n🔄 Syncing chats...');
-    const chats = await fetchAllPages<Chat>(client, '/me/chats?$expand=members');
+export async function syncChats_Old(client: AxiosInstance): Promise<Chat[]> {
+    console.log('\n🔄 Syncing chats list...');
+
+    const chats = await fetchAllPages<Chat>(client, '/me/chats?$top=50');
 
     for (const chat of chats) {
         await upsert('chats', {
@@ -45,6 +46,45 @@ export async function syncChats(client: AxiosInstance): Promise<Chat[]> {
     return chats;
 }
 
+
+
+
+
+export async function syncChats(client: AxiosInstance): Promise<Chat[]> {
+    console.log('\n🔄 Syncing chats list...');
+
+    const chats = await fetchAllPages<Chat>(
+        client,
+        '/me/chats?$top=50&$expand=members'
+    );
+
+    const db = getDb(); // ← gọi 1 lần bên ngoài loop
+
+    for (const chat of chats) {
+        await upsert('chats', {
+            id: chat.id,
+            chat_type: chat.chatType,
+            topic: chat.topic || null,
+            created_at: new Date(chat.createdDateTime),
+            synced_at: new Date()
+        });
+
+        // Xóa members cũ rồi insert lại
+        await db.execute('DELETE FROM chat_members WHERE chat_id = ?', [chat.id]);
+
+        for (const member of chat.members || []) {
+            await upsert('chat_members', {
+                chat_id: chat.id,
+                user_id: member.userId || null,
+                display_name: member.displayName || null,
+                email: member.email || null
+            });
+        }
+    }
+
+    console.log(`✅ Found ${chats.length} chats`);
+    return chats;
+}
 export async function syncChatMessages(
     client: AxiosInstance,
     chatId: string,

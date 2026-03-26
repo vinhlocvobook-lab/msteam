@@ -107,6 +107,17 @@ export async function initDb(): Promise<void> {
   ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 `);
   await db.execute(`
+  CREATE TABLE IF NOT EXISTS chat_members (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    chat_id VARCHAR(255) NOT NULL,
+    user_id VARCHAR(255),
+    display_name VARCHAR(255),
+    email VARCHAR(255),
+    INDEX idx_chat_id (chat_id),
+    INDEX idx_user_id (user_id)
+  ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+`);
+  await db.execute(`
   CREATE TABLE IF NOT EXISTS sync_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     sync_type VARCHAR(50),

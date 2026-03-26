@@ -5,7 +5,7 @@ export async function GET(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const { id } = await params; // ← await Promise
+    const { id } = await params;
     const { searchParams } = new URL(req.url);
     const page = Number(searchParams.get('page') || 1);
     const limit = 30;

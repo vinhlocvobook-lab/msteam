@@ -1,9 +1,17 @@
+// import { getAccessToken } from './auth';
+// import { createGraphClient, sleep } from './graph';
+// import { initDb, closeDb } from './db';
+// import { syncTeams, syncChannels } from './sync/teams';
+// import { syncChannelMessages } from './sync/messages';
+// import { syncChats, syncChatMessages } from './sync/chats';
+// import { startScheduler } from './scheduler';
+
 import { getAccessToken } from './auth';
 import { createGraphClient, sleep } from './graph';
 import { initDb, closeDb } from './db';
 import { syncTeams, syncChannels } from './sync/teams';
-import { syncChannelMessages } from './sync/messages';
-import { syncChats, syncChatMessages } from './sync/chats';
+import { syncChannelMessages, syncChatMessages } from './sync/messages'; // ← gộp cả 2 vào đây
+import { syncChats } from './sync/chats'; // ← chỉ còn syncChats
 import { startScheduler } from './scheduler';
 
 // ─── Core sync function ───────────────────────────────────────────
