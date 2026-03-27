@@ -4,7 +4,7 @@ import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, MessageSquare, Users, Clock, Search, ChevronRight } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Users, Clock, Search, ChevronRight, ExternalLink } from 'lucide-react';
 import { MessageThread } from '@/components/messages/message-thread';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -34,27 +34,18 @@ export default function ChatDetailPage({
     const router = useRouter();
 
     useEffect(() => {
-        // Load current chat info
         fetch(`/api/chats?id=${id}`)
             .then(r => r.json())
             .then(setCurrentChat);
 
-        // Load all chats cho sidebar
         fetch('/api/chats?page=1')
             .then(r => r.json())
             .then(data => setAllChats(data.chats || []));
     }, [id]);
 
-    // const filteredChats = search
-    //     ? allChats.filter(c =>
-    //         c.topic?.toLowerCase().includes(search.toLowerCase()) ||
-    //         c.last_sender?.toLowerCase().includes(search.toLowerCase())
-    //     )
-    //     : allChats;
-
     const filteredChats = search
         ? allChats.filter(c =>
-            c.display_name?.toLowerCase().includes(search.toLowerCase()) ||  // ← thêm
+            c.display_name?.toLowerCase().includes(search.toLowerCase()) ||
             c.topic?.toLowerCase().includes(search.toLowerCase()) ||
             c.last_sender?.toLowerCase().includes(search.toLowerCase())
         )
@@ -112,27 +103,23 @@ export default function ChatDetailPage({
                                     isActive ? 'bg-blue-50' : 'hover:bg-gray-100'
                                 )}
                             >
-                                {/* Avatar */}
                                 <div className={cn(
                                     'w-8 h-8 rounded-full flex items-center justify-center text-sm shrink-0',
                                     isActive ? 'bg-blue-500' : 'bg-gray-200'
                                 )}>
                                     {info.icon}
                                 </div>
-                                {/* Info */}
                                 <div className="flex-1 min-w-0 text-left">
                                     <p className={cn(
                                         'text-xs font-medium truncate',
                                         isActive ? 'text-blue-700' : 'text-gray-700'
                                     )}>
-                                        {/* {chat.topic || `${info.icon} ${info.label}`} */}
                                         {chat.display_name || chat.topic || `${info.icon} ${info.label}`}
                                     </p>
                                     {lastMsg && (
                                         <p className="text-xs text-gray-400 truncate">{lastMsg}</p>
                                     )}
                                 </div>
-                                {/* Message count */}
                                 {chat.message_count > 0 && (
                                     <span className="text-xs text-gray-400 shrink-0">
                                         {Number(chat.message_count).toLocaleString()}
@@ -149,7 +136,6 @@ export default function ChatDetailPage({
 
                 {/* Header */}
                 <div className="bg-white border-b px-4 py-3 flex items-center gap-3 shrink-0">
-                    {/* Toggle sidebar */}
                     <Button
                         variant="ghost" size="sm"
                         onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -169,7 +155,6 @@ export default function ChatDetailPage({
                             </div>
                             <div className="flex-1 min-w-0">
                                 <h1 className="font-semibold truncate text-sm">
-                                    {/* {currentChat.topic || typeInfo.label} */}
                                     {currentChat.display_name || currentChat.topic || typeInfo.label}
                                 </h1>
                                 <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -189,6 +174,17 @@ export default function ChatDetailPage({
                                     )}
                                 </div>
                             </div>
+
+                            {/* ← NÚT MỞ TRONG TEAMS */}
+                            <a
+                                href={`https://teams.microsoft.com/l/chat/${encodeURIComponent(id)}/0`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400 hover:text-blue-600 ml-2 shrink-0"
+                                title="Mở trong Microsoft Teams"
+                            >
+                                <ExternalLink size={16} />
+                            </a>
                         </>
                     ) : (
                         <span className="text-gray-400 text-sm">Đang tải...</span>

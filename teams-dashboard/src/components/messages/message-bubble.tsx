@@ -1,5 +1,6 @@
 'use client';
-
+// Thêm import ở đầu file
+import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -139,7 +140,7 @@ function parseTextContent(html: string, contentType: string): string {
 
 // ── Sub-components ────────────────────────────────────────────────
 
-function LinkPreview({ links }: { links: { text: string; url: string }[] }) {
+function LinkPreview_old({ links }: { links: { text: string; url: string }[] }) {
     if (!links.length) return null;
     return (
         <div className="mt-2 space-y-1">
@@ -155,6 +156,77 @@ function LinkPreview({ links }: { links: { text: string; url: string }[] }) {
                     <ExternalLink size={11} className="shrink-0" />
                     <span className="truncate">{link.text || link.url}</span>
                 </a>
+            ))}
+        </div>
+    );
+}
+
+
+
+// ── OG Preview Card ───────────────────────────────────────────────
+
+interface OGData {
+    title?: string | null;
+    description?: string | null;
+    image?: string | null;
+    siteName?: string | null;
+}
+
+function OGCard({ url }: { url: string }) {
+    const [og, setOg] = useState<OGData | null>(null);
+
+    useEffect(() => {
+        fetch(`/api/og?url=${encodeURIComponent(url)}`)
+            .then(r => r.json())
+            .then(d => { if (!d.error && d.title) setOg(d); })
+            .catch(() => { });
+    }, [url]);
+
+    if (!og) return (
+        <a
+            href={url} target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-xs text-blue-400 hover:underline truncate"
+        >
+            <ExternalLink size={11} className="shrink-0" />
+            <span className="truncate">{url}</span>
+        </a>
+    );
+
+    return (
+        <a
+            href={url} target="_blank" rel="noopener noreferrer"
+            className="mt-1 flex gap-0 max-w-xs border border-gray-200 rounded-xl overflow-hidden
+                 hover:border-blue-300 hover:shadow-sm transition-all bg-white group block"
+        >
+            {og.image && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                    src={og.image} alt=""
+                    className="w-20 h-20 object-cover shrink-0"
+                    onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                />
+            )}
+            <div className="p-2 flex-1 min-w-0">
+                {og.siteName && (
+                    <p className="text-xs text-gray-400 truncate">{og.siteName}</p>
+                )}
+                <p className="text-xs font-semibold text-gray-800 line-clamp-2 group-hover:text-blue-600">
+                    {og.title}
+                </p>
+                {og.description && (
+                    <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">{og.description}</p>
+                )}
+            </div>
+        </a>
+    );
+}
+
+function LinkPreview({ links }: { links: { text: string; url: string }[] }) {
+    if (!links.length) return null;
+    return (
+        <div className="mt-2 space-y-2">
+            {links.map((link, i) => (
+                <OGCard key={i} url={link.url} />
             ))}
         </div>
     );
